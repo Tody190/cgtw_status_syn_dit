@@ -12,8 +12,8 @@ import pprint
 import time
 import sys
 
-CGTW_ROOT_BIN = u"C:/CgTeamWork_v6.2/bin/"
-# CGTW_ROOT_BIN = __file__.replace(u"\\", u"/").split(u"ext_plugin")[0]
+#CGTW_ROOT_BIN = u"C:/CgTeamWork_v6.2/bin/"
+CGTW_ROOT_BIN = __file__.replace(u"\\", u"/").split(u"ext_plugin")[0]
 for _path in [
     CGTW_ROOT_BIN + u"base",
     CGTW_ROOT_BIN + u"lib/pyside",
@@ -61,7 +61,7 @@ def task_fix_syn_dit():
     for task_info in task_entity_list_info:
         if not task_info.get(u"task.back_patch") == u"Y":  # 状态为回插镜头的才进行状态同步
             continue
-        if not task_info.get(u"task.status") == u"返修":
+        if not task_info.get(u"pipeline.entity") == u"dit":  # 不查看 DIT 的状态
             continue
 
         filter_list = [[u"seq.entity", u"=", task_info.get(u"seq.entity")],
@@ -80,7 +80,11 @@ def task_fix_syn_dit():
             t_tw.task.set(db=database,
                           module=module,
                           id_list=dit_task_id_list,
-                          sign_data_dict={u"task.status": u"返修"})
+                          sign_data_dict={u"task.status": task_info.get(u"task.status")})
+            # # 刷新
+            # t_tw.client.refresh_all(db=database,
+            #                         module=module,
+            #                         module_type=module_type)
 
 
 if __name__ == u"__main__":
